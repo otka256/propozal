@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://soheil-taheri.ir/sitemap.xml
+
+# Disallow backend files
+Disallow: /*.py$
+Disallow: /requirements.txt
+Disallow: /customer_reviews.csv
+Disallow: /customer_reviews.txt
+Disallow: /.vscode/
+
+# Allow important files
+Allow: /*.html$
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.jpg$
+Allow: /*.png$
+Allow: /*.gif$
+Allow: /*.svg$
+
+# Crawl delay (optional)
+Crawl-delay: 1

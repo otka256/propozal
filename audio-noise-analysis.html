@@ -1,0 +1,625 @@
+    <!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحلیل نویز صدا | پردازش سیگنال‌های صوتی</title>
+    <link rel="icon" type="image/jpeg" href="/5778493857136839741.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="/5778493857136839741.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2d9a6f6d5.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Vazirmatn', sans-serif; 
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+            color: #f1f5f9;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wave-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z" fill="white"/></svg>');
+            background-size: 1200px 120px;
+            animation: waveMove 8s ease-in-out infinite;
+        }
+        
+        @keyframes waveMove {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(-200px); }
+        }
+        
+        .audio-processor {
+            background: linear-gradient(145deg, #1f2937, #374151);
+            border-radius: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 25px 50px rgba(16, 185, 129, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .waveform {
+            height: 100px;
+            background: #111827;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .wave-bar {
+            position: absolute;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to top, #10b981, #34d399);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+        
+        .control-panel {
+            background: linear-gradient(145deg, #374151, #4b5563);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .filter-button {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .filter-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .filter-button.active {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+        }
+        
+        .spectrum-analyzer {
+            background: #111827;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            height: 300px;
+            position: relative;
+        }
+        
+        .frequency-bar {
+            position: absolute;
+            bottom: 20px;
+            width: 8px;
+            background: linear-gradient(to top, #10b981, #34d399, #6ee7b7);
+            border-radius: 4px;
+            transition: height 0.2s ease;
+        }
+        
+        .technical-card {
+            background: linear-gradient(145deg, #1f2937, #374151);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .technical-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+            transition: left 0.8s;
+        }
+        
+        .technical-card:hover::before {
+            left: 100%;
+        }
+        
+        .technical-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(16, 185, 129, 0.3);
+        }
+        
+        .algorithm-showcase {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #10b981;
+            transition: all 0.3s ease;
+        }
+        
+        .algorithm-showcase:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+        }
+        
+        .noise-visualization {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        
+        .signal-box {
+            width: 200px;
+            height: 100px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .noisy-signal {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+        
+        .clean-signal {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .arrow {
+            font-size: 2rem;
+            color: #10b981;
+            margin: 0 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .max-w-7xl { padding: 0 1rem; }
+            .text-5xl { font-size: 2.2rem !important; }
+            .text-xl { font-size: 1rem !important; }
+            .text-3xl { font-size: 1.5rem !important; }
+            .text-2xl { font-size: 1.2rem !important; }
+            .grid, .lg\\:grid-cols-2, .grid-cols-2, .grid-cols-3 { 
+                grid-template-columns: 1fr !important; 
+                gap: 1.5rem;
+            }
+            .bg-gray-800, .bg-emerald-900\\/20 { 
+                padding: 1.5rem !important; 
+            }
+            .bg-emerald-600 { 
+                padding: 0.8rem 1.5rem !important; 
+                width: 100%;
+            }
+            .waveform-container { height: 200px !important; }
+            .mb-16 { margin-bottom: 2rem !important; }
+            .p-8 { padding: 1.5rem !important; }
+            .arrow { font-size: 1.5rem !important; margin: 0 10px !important; }
+        }
+        @media (max-width: 480px) {
+            .text-5xl { font-size: 1.8rem !important; }
+            .max-w-7xl { padding: 0 0.8rem; }
+            .bg-gray-800 { padding: 1.2rem !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-emerald-900/95 backdrop-blur-sm border-b border-emerald-700 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="text-xl font-bold text-emerald-400 hover:text-white transition">
+                    ← بازگشت به صفحه اصلی
+                </a>
+                <div class="text-lg font-semibold text-white flex items-center">
+                    <i class="fas fa-wave-square text-emerald-400 ml-2"></i>
+                    تحلیل نویز صدا
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section pt-24 pb-16 relative">
+        <div class="wave-bg"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="mb-8">
+                <img src="/5778493857136839741.jpg" alt="تحلیل نویز صدا" class="w-32 h-32 rounded-full mx-auto border-4 border-white/30 object-cover shadow-2xl">
+            </div>
+            <h1 class="text-6xl md:text-7xl font-black text-white mb-6 tracking-tight">
+                تحلیل نویز صدا
+            </h1>
+            <p class="text-xl md:text-2xl text-emerald-100 mb-8 max-w-5xl mx-auto leading-relaxed">
+                فناوری پیشرفته پردازش سیگنال برای حذف نویز و بهبود کیفیت صدا
+            </p>
+            <div class="flex flex-wrap justify-center gap-3 text-sm mb-8">
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#DigitalSignalProcessing</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#NoiseReduction</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#AudioProcessing</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#MachineLearning</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Audio Processor -->
+    <section class="py-20 bg-gradient-to-b from-emerald-900 to-teal-900">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-12">🎵 پردازشگر صوتی تعاملی</h2>
+            
+            <div class="audio-processor p-8">
+                <!-- Audio Upload Section -->
+                <div class="text-center mb-8">
+                    <div class="bg-gray-800 border-2 border-dashed border-emerald-400 rounded-xl p-8 mb-4">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-emerald-400 mb-4"></i>
+                        <p class="text-white mb-4">فایل صوتی خود را آپلود کنید</p>
+                        <input type="file" id="audioFile" accept="audio/*" class="hidden">
+                        <button onclick="document.getElementById('audioFile').click()" class="filter-button">
+                            <i class="fas fa-upload ml-2"></i>
+                            انتخاب فایل
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Waveform Display -->
+                <div class="waveform" id="waveform">
+                    <div class="text-center text-gray-400 mt-8">
+                        فایل صوتی را آپلود کنید تا موج صوتی نمایش داده شود
+                    </div>
+                </div>
+                
+                <!-- Control Panel -->
+                <div class="control-panel">
+                    <h3 class="text-xl font-bold text-white mb-4">🎛️ کنترل‌های پردازش</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">نوع فیلتر:</label>
+                            <div class="flex flex-wrap">
+                                <button class="filter-button active" onclick="selectFilter('wiener')">Wiener</button>
+                                <button class="filter-button" onclick="selectFilter('kalman')">Kalman</button>
+                                <button class="filter-button" onclick="selectFilter('spectral')">Spectral</button>
+                                <button class="filter-button" onclick="selectFilter('adaptive')">Adaptive</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">شدت فیلتر:</label>
+                            <input type="range" id="filterStrength" min="1" max="10" value="5" class="w-full">
+                            <div class="text-center text-white mt-2">شدت: <span id="strengthValue">5</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-6">
+                        <button onclick="processAudio()" class="filter-button bg-gradient-to-r from-emerald-600 to-teal-600 text-lg px-8 py-3">
+                            <i class="fas fa-magic ml-2"></i>
+                            پردازش صدا
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Before/After Comparison -->
+                <div class="noise-visualization">
+                    <div class="signal-box noisy-signal">
+                        <div>
+                            <i class="fas fa-volume-up text-2xl mb-2"></i>
+                            <div>صدای نویزدار</div>
+                        </div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="signal-box clean-signal">
+                        <div>
+                            <i class="fas fa-volume-down text-2xl mb-2"></i>
+                            <div>صدای تمیز</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Spectrum Analyzer -->
+                <div class="spectrum-analyzer">
+                    <h3 class="text-white font-bold mb-4">📊 آنالیزر طیف فرکانسی</h3>
+                    <div id="spectrumBars" class="relative h-full"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Deep Dive -->
+    <section class="py-20 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">🔬 عمق فنی پروژه</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                <div class="technical-card">
+                    <h3 class="text-2xl font-bold text-emerald-400 mb-6">🧮 الگوریتم‌های پردازش</h3>
+                    <div class="space-y-4">
+                        <div class="algorithm-showcase">
+                            <h4 class="font-bold text-white mb-2">1. Wiener Filter</h4>
+                            <p class="text-gray-300">فیلتر بهینه برای حذف نویز با حداقل خطای میانگین مربعات</p>
+                            <div class="text-sm text-emerald-400 mt-2">کاربرد: نویز گاوسی</div>
+                        </div>
+                        <div class="algorithm-showcase">
+                            <h4 class="font-bold text-white mb-2">2. Spectral Subtraction</h4>
+                            <p class="text-gray-300">کسر طیف نویز از طیف سیگنال آلوده</p>
+                            <div class="text-sm text-emerald-400 mt-2">کاربرد: نویز ثابت</div>
+                        </div>
+                        <div class="algorithm-showcase">
+                            <h4 class="font-bold text-white mb-2">3. Adaptive Filtering</h4>
+                            <p class="text-gray-300">فیلترهای تطبیقی LMS و RLS</p>
+                            <div class="text-sm text-emerald-400 mt-2">کاربرد: نویز متغیر</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="technical-card">
+                    <h3 class="text-2xl font-bold text-emerald-400 mb-6">🤖 یادگیری ماشین</h3>
+                    <div class="space-y-4">
+                        <div class="algorithm-showcase">
+                            <h4 class="font-bold text-white mb-2">1. Deep Neural Networks</h4>
+                            <p class="text-gray-300">شبکه‌های عصبی عمیق برای تشخیص و حذف نویز</p>
+                            <div class="text-sm text-emerald-400 mt-2">دقت: 94%</div>
+                        </div>
+                        <div class="algorithm-showcase">
+                            <h4 class="font-bold text-white mb-2">2. RNNoise Algorithm</h4>
+                            <p class="text-gray-300">الگوریتم مبتنی بر RNN برای حذف نویز زمان واقعی</p>
+                            <div class="text-sm text-emerald-400 mt-2">تأخیر: <20ms</div>
+                        </div>
+                        <div class="algorithm-showcase">
+                            <h4 class="font-bold text-white mb-2">3. Autoencoder</h4>
+                            <p class="text-gray-300">کدگذار خودکار برای یادگیری نمایش تمیز سیگنال</p>
+                            <div class="text-sm text-emerald-400 mt-2">کاهش نویز: 85%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Metrics -->
+            <div class="grid md:grid-cols-4 gap-6 mb-16">
+                <div class="technical-card text-center">
+                    <div class="text-4xl font-bold text-emerald-400 mb-2">-25dB</div>
+                    <div class="text-gray-300">کاهش نویز</div>
+                    <div class="text-sm text-gray-400 mt-2">SNR Improvement</div>
+                </div>
+                <div class="technical-card text-center">
+                    <div class="text-4xl font-bold text-emerald-400 mb-2">96%</div>
+                    <div class="text-gray-300">دقت تشخیص</div>
+                    <div class="text-sm text-gray-400 mt-2">نوع نویز</div>
+                </div>
+                <div class="technical-card text-center">
+                    <div class="text-4xl font-bold text-emerald-400 mb-2">15ms</div>
+                    <div class="text-gray-300">تأخیر پردازش</div>
+                    <div class="text-sm text-gray-400 mt-2">Real-time</div>
+                </div>
+                <div class="technical-card text-center">
+                    <div class="text-4xl font-bold text-emerald-400 mb-2">48kHz</div>
+                    <div class="text-gray-300">نرخ نمونه‌برداری</div>
+                    <div class="text-sm text-gray-400 mt-2">High Quality</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Applications & Case Studies -->
+    <section class="py-20 bg-emerald-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">🌍 کاربردهای صنعتی</h2>
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="technical-card text-center">
+                    <div class="text-5xl text-emerald-400 mb-4">🎙️</div>
+                    <h3 class="text-xl font-bold text-white mb-4">تماس‌های تلفنی</h3>
+                    <p class="text-gray-300">بهبود کیفیت مکالمات در مراکز تماس و کنفرانس‌های ویدیویی</p>
+                    <div class="mt-4 text-emerald-400 font-semibold">بهبود 80% کیفیت صدا</div>
+                </div>
+                
+                <div class="technical-card text-center">
+                    <div class="text-5xl text-emerald-400 mb-4">🎵</div>
+                    <h3 class="text-xl font-bold text-white mb-4">صنعت موسیقی</h3>
+                    <p class="text-gray-300">ترمیم ضبط‌های قدیمی و حذف نویز از استودیوهای ضبط</p>
+                    <div class="mt-4 text-emerald-400 font-semibold">پردازش 1000+ ترک</div>
+                </div>
+                
+                <div class="technical-card text-center">
+                    <div class="text-5xl text-emerald-400 mb-4">🏥</div>
+                    <h3 class="text-xl font-bold text-white mb-4">تجهیزات پزشکی</h3>
+                    <p class="text-gray-300">بهبود سیگنال‌های صوتی در دستگاه‌های تشخیص پزشکی</p>
+                    <div class="mt-4 text-emerald-400 font-semibold">دقت تشخیص +15%</div>
+                </div>
+            </div>
+            
+            <!-- Real Project Results -->
+            <div class="technical-card">
+                <h3 class="text-3xl font-bold text-emerald-400 mb-8 text-center">📈 نتایج پروژه‌های واقعی</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-4">🏢 شرکت مخابراتی</h4>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• کاهش 70% شکایات کیفیت تماس</li>
+                            <li>• بهبود 85% رضایت مشتریان</li>
+                            <li>• صرفه‌جویی 2 میلیون تومان ماهانه</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-4">🎬 استودیو ضبط</h4>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• کاهش 60% زمان پست‌پروداکشن</li>
+                            <li>• بهبود 90% کیفیت ضبط‌های قدیمی</li>
+                            <li>• افزایش 40% سرعت تولید</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-20 bg-gradient-to-r from-emerald-900/50 to-teal-900/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold text-white mb-6">🚀 نیاز به پردازش صوتی حرفه‌ای؟</h2>
+            <p class="text-xl text-gray-300 mb-8">
+                فناوری پیشرفته ما می‌تواند کیفیت صدای شما را تا 90% بهبود دهد
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/contact.html" 
+                   class="inline-flex items-center px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition duration-300 transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-rocket ml-2"></i>
+                    شروع پروژه
+                </a>
+                <a href="#" 
+                   class="inline-flex items-center px-8 py-4 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition duration-300 transform hover:scale-105">
+                    <i class="fab fa-github ml-2"></i>
+                    کد منبع
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-emerald-900 border-t border-emerald-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-gray-400">© 2025 سهیل طاهری. تمامی حقوق محفوظ است.</p>
+        </div>
+    </footer>
+
+    <script>
+        let selectedFilter = 'wiener';
+        let isProcessing = false;
+        
+        // Initialize spectrum analyzer
+        function initSpectrumAnalyzer() {
+            const container = document.getElementById('spectrumBars');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 50; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'frequency-bar';
+                bar.style.left = `${i * 12}px`;
+                bar.style.height = `${Math.random() * 200 + 20}px`;
+                container.appendChild(bar);
+            }
+            
+            // Animate bars
+            setInterval(() => {
+                const bars = container.querySelectorAll('.frequency-bar');
+                bars.forEach(bar => {
+                    bar.style.height = `${Math.random() * 200 + 20}px`;
+                });
+            }, 200);
+        }
+        
+        // Initialize waveform
+        function initWaveform() {
+            const waveform = document.getElementById('waveform');
+            waveform.innerHTML = '';
+            
+            for (let i = 0; i < 200; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'wave-bar';
+                bar.style.left = `${i * 3}px`;
+                bar.style.height = `${Math.random() * 80 + 10}px`;
+                waveform.appendChild(bar);
+            }
+            
+            // Animate waveform
+            setInterval(() => {
+                const bars = waveform.querySelectorAll('.wave-bar');
+                bars.forEach(bar => {
+                    bar.style.height = `${Math.random() * 80 + 10}px`;
+                });
+            }, 100);
+        }
+        
+        function selectFilter(filterType) {
+            selectedFilter = filterType;
+            
+            // Update button states
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function processAudio() {
+            if (isProcessing) return;
+            
+            isProcessing = true;
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i>در حال پردازش...';
+            button.disabled = true;
+            
+            // Simulate processing
+            setTimeout(() => {
+                // Show results
+                showProcessingResults();
+                
+                button.innerHTML = originalText;
+                button.disabled = false;
+                isProcessing = false;
+            }, 3000);
+        }
+        
+        function showProcessingResults() {
+            const results = `
+                <div class="bg-emerald-800/50 border border-emerald-600 rounded-xl p-6 mt-6">
+                    <h4 class="text-xl font-bold text-white mb-4">✅ نتایج پردازش</h4>
+                    <div class="grid md:grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold text-emerald-400">-22dB</div>
+                            <div class="text-gray-300">کاهش نویز</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-emerald-400">94%</div>
+                            <div class="text-gray-300">بهبود کیفیت</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-emerald-400">2.3s</div>
+                            <div class="text-gray-300">زمان پردازش</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.querySelector('.audio-processor').insertAdjacentHTML('beforeend', results);
+        }
+        
+        // Filter strength slider
+        const strengthSlider = document.getElementById('filterStrength');
+        const strengthValue = document.getElementById('strengthValue');
+        
+        strengthSlider.addEventListener('input', function() {
+            strengthValue.textContent = this.value;
+        });
+        
+        // File upload handler
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                document.querySelector('.text-center .text-white').textContent = `فایل انتخاب شده: ${fileName}`;
+                initWaveform();
+            }
+        });
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initSpectrumAnalyzer();
+        });
+    </script>
+</body>
+</html>

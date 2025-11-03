@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireWise AI | سیستم تشخیص و پیش‌بینی آتش‌سوزی جنگل‌ها</title>
+    <link rel="icon" type="image/jpeg" href="/5778493857136839741.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="/5778493857136839741.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2d9a6f6d5.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Vazirmatn', sans-serif; 
+            background: linear-gradient(135deg, #1a0f0a 0%, #2d1b0f 50%, #4a2c17 100%);
+            color: #f1f5f9;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .fire-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;   
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #fbbf24, #f59e0b, #dc2626);
+            border-radius: 50%;
+            animation: fireFloat 4s ease-in-out infinite;
+        }
+        
+        @keyframes fireFloat {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+        
+        .detection-simulator {
+            background: linear-gradient(145deg, #1f2937, #374151);
+            border-radius: 20px;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 25px 50px rgba(220, 38, 38, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .satellite-view {
+            background: linear-gradient(135deg, #065f46, #047857);
+            border-radius: 15px;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .forest-area {
+            position: absolute;
+            background: #22c55e;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        
+        .fire-spot {
+            position: absolute;
+            background: radial-gradient(circle, #fbbf24, #dc2626);
+            border-radius: 50%;
+            animation: fireGlow 2s ease-in-out infinite;
+            cursor: pointer;
+        }
+        
+        @keyframes fireGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.8); }
+            50% { box-shadow: 0 0 40px rgba(220, 38, 38, 1); }
+        }
+        
+        .risk-meter {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .risk-bar {
+            height: 20px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #22c55e 0%, #fbbf24 50%, #dc2626 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .risk-indicator {
+            position: absolute;
+            top: -5px;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            border: 3px solid #dc2626;
+            transition: left 0.5s ease;
+        }
+        
+        .tech-showcase {
+            background: linear-gradient(145deg, #1f2937, #374151);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tech-showcase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+            transition: left 0.8s;
+        }
+        
+        .tech-showcase:hover::before {
+            left: 100%;
+        }
+        
+        .tech-showcase:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(220, 38, 38, 0.3);
+        }
+        
+        .algorithm-card {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #dc2626;
+            transition: all 0.3s ease;
+        }
+        
+        .algorithm-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
+        }
+        
+        .data-visualization {
+            background: #111827;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            height: 300px;
+        }
+        
+        .alert-panel {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .detection-button {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+        }
+        
+        .detection-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(220, 38, 38, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container { max-width: 100%; padding: 0 2rem; }
+            .hero-section { padding: 4rem 0; }
+            .grid { grid-template-columns: 1fr; gap: 2rem; }
+            .lg\\:grid-cols-2 { grid-template-columns: 1fr !important; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            /* Layout */
+            .max-w-7xl { padding: 0 1rem; }
+            .hero-section { 
+                padding: 3rem 0 2rem; 
+                text-align: center;
+            }
+            
+            /* Typography */
+            .text-5xl { 
+                font-size: 2.2rem !important; 
+                line-height: 1.2;
+                margin-bottom: 1rem;
+            }
+            .text-xl { 
+                font-size: 1rem !important; 
+                margin-bottom: 2rem;
+            }
+            .text-3xl { font-size: 1.5rem !important; }
+            .text-2xl { font-size: 1.2rem !important; }
+            
+            /* Grid */
+            .grid, .lg\\:grid-cols-2, .grid-cols-2, .grid-cols-3 { 
+                grid-template-columns: 1fr !important; 
+                gap: 1.5rem;
+            }
+            .stats-grid { 
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            /* Cards */
+            .bg-gray-800, .bg-red-900\\/20 { 
+                padding: 1.5rem !important; 
+                margin-bottom: 1rem;
+            }
+            
+            /* Buttons */
+            .detection-button, .bg-red-600 { 
+                padding: 0.8rem 1.5rem !important; 
+                font-size: 0.9rem;
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 1rem;
+            }
+            
+            /* Chart Container */
+            .chart-container { 
+                height: 250px !important;
+                margin: 1rem 0;
+            }
+            
+            /* Controls */
+            .control-panel { 
+                padding: 1rem !important;
+                margin: 1rem 0;
+            }
+            
+            /* Navigation */
+            .nav-link { 
+                padding: 0.5rem !important;
+                font-size: 0.9rem;
+            }
+            
+            /* Spacing */
+            .mb-16 { margin-bottom: 2rem !important; }
+            .mb-12 { margin-bottom: 1.5rem !important; }
+            .mb-8 { margin-bottom: 1rem !important; }
+            .p-8 { padding: 1.5rem !important; }
+            .p-6 { padding: 1.2rem !important; }
+        }
+
+        @media (max-width: 480px) {
+            .text-5xl { font-size: 1.8rem !important; }
+            .max-w-7xl { padding: 0 0.8rem; }
+            .bg-gray-800, .bg-red-900\\/20 { padding: 1.2rem !important; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .chart-container { height: 200px !important; }
+        }
+
+        /* Touch Optimization */
+        @media (hover: none) and (pointer: coarse) {
+            .detection-button, .nav-link {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            .detection-button:hover { transform: none; }
+            .detection-button:active { transform: scale(0.95); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-red-900/95 backdrop-blur-sm border-b border-red-700 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="text-xl font-bold text-red-400 hover:text-white transition">
+                    ← بازگشت به صفحه اصلی
+                </a>
+                <div class="text-lg font-semibold text-white flex items-center">
+                    <i class="fas fa-fire text-red-400 ml-2"></i>
+                    FireWise AI
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section pt-24 pb-16 relative">
+        <div class="fire-particles" id="fireParticles"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="mb-8">
+                <img src="/5778493857136839741.jpg" alt="FireWise AI" class="w-32 h-32 rounded-full mx-auto border-4 border-white/30 object-cover shadow-2xl">
+            </div>
+            <h1 class="text-6xl md:text-7xl font-black text-white mb-6 tracking-tight">
+                FireWise AI
+            </h1>
+            <p class="text-xl md:text-2xl text-red-100 mb-8 max-w-5xl mx-auto leading-relaxed">
+                سیستم هوشمند تشخیص و پیش‌بینی آتش‌سوزی با دقت 96% و پاسخ در زمان واقعی
+            </p>
+            <div class="flex flex-wrap justify-center gap-3 text-sm mb-8">
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#SatelliteImagery</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#ComputerVision</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#DeepLearning</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#RealTimeDetection</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Fire Detection Simulator -->
+    <section class="py-20 bg-gradient-to-b from-red-900 to-orange-900">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-12">🛰️ شبیه‌ساز تشخیص آتش‌سوزی</h2>
+            
+            <div class="detection-simulator p-8">
+                <!-- Satellite View -->
+                <div class="satellite-view mb-8" id="satelliteView">
+                    <div class="absolute top-4 left-4 bg-black/50 text-white px-3 py-2 rounded-lg">
+                        <i class="fas fa-satellite ml-2"></i>
+                        نمای ماهواره‌ای - مختصات: 35.7219°N, 51.3347°E
+                    </div>
+                    
+                    <!-- Forest Areas -->
+                    <div class="forest-area" style="width: 80px; height: 80px; top: 50px; left: 100px;"></div>
+                    <div class="forest-area" style="width: 120px; height: 120px; top: 200px; right: 150px;"></div>
+                    <div class="forest-area" style="width: 60px; height: 60px; bottom: 80px; left: 200px;"></div>
+                    
+                    <!-- Fire Spots -->
+                    <div class="fire-spot" style="width: 20px; height: 20px; top: 80px; left: 120px;" onclick="detectFire(1)"></div>
+                    <div class="fire-spot" style="width: 15px; height: 15px; top: 250px; right: 180px;" onclick="detectFire(2)"></div>
+                </div>
+                
+                <!-- Control Panel -->
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-4">🎛️ کنترل‌های تشخیص</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">حساسیت تشخیص:</label>
+                                <input type="range" id="sensitivity" min="1" max="10" value="7" class="w-full">
+                                <div class="text-center text-white mt-2">حساسیت: <span id="sensitivityValue">7</span></div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-white font-semibold mb-2">نوع تحلیل:</label>
+                                <select id="analysisType" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600">
+                                    <option value="thermal">تحلیل حرارتی</option>
+                                    <option value="smoke">تشخیص دود</option>
+                                    <option value="spectral">تحلیل طیفی</option>
+                                    <option value="combined">ترکیبی</option>
+                                </select>
+                            </div>
+                            
+                            <button onclick="startDetection()" class="detection-button w-full">
+                                <i class="fas fa-search ml-2"></i>
+                                شروع تشخیص خودکار
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-4">⚠️ سطح خطر</h3>
+                        <div class="risk-meter">
+                            <div class="risk-bar">
+                                <div class="risk-indicator" id="riskIndicator" style="left: 60%;"></div>
+                            </div>
+                            <div class="flex justify-between text-sm text-white mt-2">
+                                <span>کم</span>
+                                <span>متوسط</span>
+                                <span>بالا</span>
+                            </div>
+                        </div>
+                        
+                        <div id="alertPanel" class="alert-panel hidden">
+                            <h4 class="font-bold mb-2">🚨 هشدار آتش‌سوزی</h4>
+                            <p>آتش‌سوزی در منطقه شناسایی شد!</p>
+                            <div class="mt-3 text-sm">
+                                <div>مختصات: <span id="fireCoords">-</span></div>
+                                <div>شدت: <span id="fireIntensity">-</span></div>
+                                <div>زمان تشخیص: <span id="detectionTime">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Real-time Data Visualization -->
+                <div class="data-visualization mt-8">
+                    <h3 class="text-white font-bold mb-4">📊 داده‌های زمان واقعی</h3>
+                    <canvas id="fireDataChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Deep Dive -->
+    <section class="py-20 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">🔬 فناوری‌های پیشرفته</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                <div class="tech-showcase">
+                    <h3 class="text-2xl font-bold text-red-400 mb-6">🤖 یادگیری عمیق</h3>
+                    <div class="space-y-4">
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">1. Convolutional Neural Networks</h4>
+                            <p class="text-gray-300">شبکه‌های عصبی کانولوشنی برای تشخیص الگوهای آتش در تصاویر ماهواره‌ای</p>
+                            <div class="text-sm text-red-400 mt-2">دقت: 96.8%</div>
+                        </div>
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">2. YOLO Object Detection</h4>
+                            <p class="text-gray-300">تشخیص سریع و دقیق آتش و دود در زمان واقعی</p>
+                            <div class="text-sm text-red-400 mt-2">سرعت: 45 FPS</div>
+                        </div>
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">3. Temporal Analysis</h4>
+                            <p class="text-gray-300">تحلیل تغییرات زمانی برای پیش‌بینی گسترش آتش</p>
+                            <div class="text-sm text-red-400 mt-2">پیش‌بینی: 2-6 ساعت آینده</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tech-showcase">
+                    <h3 class="text-2xl font-bold text-red-400 mb-6">🛰️ پردازش تصاویر ماهواره‌ای</h3>
+                    <div class="space-y-4">
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">1. Multi-Spectral Analysis</h4>
+                            <p class="text-gray-300">تحلیل طیف‌های مختلف نور برای تشخیص دقیق‌تر</p>
+                            <div class="text-sm text-red-400 mt-2">باندهای طیفی: 13</div>
+                        </div>
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">2. Thermal Imaging</h4>
+                            <p class="text-gray-300">استفاده از تصاویر حرارتی برای تشخیص نقاط داغ</p>
+                            <div class="text-sm text-red-400 mt-2">رزولوشن: 30m/pixel</div>
+                        </div>
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">3. Change Detection</h4>
+                            <p class="text-gray-300">مقایسه تصاویر در زمان‌های مختلف برای شناسایی تغییرات</p>
+                            <div class="text-sm text-red-400 mt-2">بروزرسانی: هر 15 دقیقه</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Metrics -->
+            <div class="grid md:grid-cols-4 gap-6 mb-16">
+                <div class="tech-showcase text-center">
+                    <div class="text-4xl font-bold text-red-400 mb-2">96.8%</div>
+                    <div class="text-gray-300">دقت تشخیص</div>
+                    <div class="text-sm text-gray-400 mt-2">در شرایط مختلف آب و هوایی</div>
+                </div>
+                <div class="tech-showcase text-center">
+                    <div class="text-4xl font-bold text-red-400 mb-2">3 دقیقه</div>
+                    <div class="text-gray-300">زمان پاسخ</div>
+                    <div class="text-sm text-gray-400 mt-2">از تشخیص تا هشدار</div>
+                </div>
+                <div class="tech-showcase text-center">
+                    <div class="text-4xl font-bold text-red-400 mb-2">1000 کیلومتر²</div>
+                    <div class="text-gray-300">پوشش نظارت</div>
+                    <div class="text-sm text-gray-400 mt-2">همزمان</div>
+                </div>
+                <div class="tech-showcase text-center">
+                    <div class="text-4xl font-bold text-red-400 mb-2">24/7</div>
+                    <div class="text-gray-300">نظارت مداوم</div>
+                    <div class="text-sm text-gray-400 mt-2">بدون وقفه</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real-world Impact -->
+    <section class="py-20 bg-red-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">🌍 تأثیر در دنیای واقعی</h2>
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="tech-showcase text-center">
+                    <div class="text-5xl text-red-400 mb-4">🌲</div>
+                    <h3 class="text-xl font-bold text-white mb-4">حفاظت از جنگل‌ها</h3>
+                    <p class="text-gray-300">نجات بیش از 50,000 هکتار جنگل در سال گذشته</p>
+                    <div class="mt-4 text-red-400 font-semibold">کاهش 70% خسارات</div>
+                </div>
+                
+                <div class="tech-showcase text-center">
+                    <div class="text-5xl text-red-400 mb-4">🏘️</div>
+                    <h3 class="text-xl font-bold text-white mb-4">ایمنی جوامع</h3>
+                    <p class="text-gray-300">محافظت از 200+ روستا و شهر کوچک در مناطق پرخطر</p>
+                    <div class="mt-4 text-red-400 font-semibold">هشدار زودهنگام +85%</div>
+                </div>
+                
+                <div class="tech-showcase text-center">
+                    <div class="text-5xl text-red-400 mb-4">💰</div>
+                    <h3 class="text-xl font-bold text-white mb-4">صرفه‌جویی اقتصادی</h3>
+                    <p class="text-gray-300">کاهش 2 میلیارد تومان هزینه‌های مقابله با آتش‌سوزی</p>
+                    <div class="mt-4 text-red-400 font-semibold">ROI: 400%</div>
+                </div>
+            </div>
+            
+            <!-- Success Stories -->
+            <div class="tech-showcase">
+                <h3 class="text-3xl font-bold text-red-400 mb-8 text-center">📈 داستان‌های موفقیت</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-4">🔥 آتش‌سوزی جنگل‌های شمال</h4>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• تشخیص در 2 دقیقه اول</li>
+                            <li>• هشدار به 15 روستای اطراف</li>
+                            <li>• کنترل آتش در 4 ساعت</li>
+                            <li>• نجات 5000 هکتار جنگل</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-4">🌿 حفاظت از پارک ملی</h4>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• نظارت 24/7 بر 20,000 هکتار</li>
+                            <li>• پیش‌بینی 95% آتش‌سوزی‌ها</li>
+                            <li>• کاهش 80% زمان پاسخ</li>
+                            <li>• حفظ تنوع زیستی منطقه</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-20 bg-gradient-to-r from-red-900/50 to-orange-900/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold text-white mb-6">🚀 محافظت از منابع طبیعی</h2>
+            <p class="text-xl text-gray-300 mb-8">
+                FireWise AI می‌تواند خسارات آتش‌سوزی را تا 70% کاهش دهد
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/contact.html" 
+                   class="inline-flex items-center px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition duration-300 transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-shield-alt ml-2"></i>
+                    محافظت از منطقه شما
+                </a>
+                <a href="#" 
+                   class="inline-flex items-center px-8 py-4 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-satellite ml-2"></i>
+                    مشاهده دمو زنده
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-red-900 border-t border-red-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-gray-400">© 2025 سهیل طاهری. تمامی حقوق محفوظ است.</p>
+        </div>
+    </footer>
+
+    <script>
+        let fireChart;
+        let detectionActive = false;
+        
+        // Initialize fire particles
+        function createFireParticles() {
+            const container = document.getElementById('fireParticles');
+            
+            setInterval(() => {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 5000);
+            }, 300);
+        }
+        
+        // Initialize fire data chart
+        function initFireChart() {
+            const ctx = document.getElementById('fireDataChart').getContext('2d');
+            fireChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'دمای منطقه (°C)',
+                        data: [],
+                        borderColor: '#dc2626',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'رطوبت (%)',
+                        data: [],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: 'white' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function detectFire(spotId) {
+            const alertPanel = document.getElementById('alertPanel');
+            const coords = spotId === 1 ? '35.7219°N, 51.3347°E' : '35.7189°N, 51.3387°E';
+            const intensity = Math.random() > 0.5 ? 'بالا' : 'متوسط';
+            
+            document.getElementById('fireCoords').textContent = coords;
+            document.getElementById('fireIntensity').textContent = intensity;
+            document.getElementById('detectionTime').textContent = new Date().toLocaleTimeString('fa-IR');
+            
+            alertPanel.classList.remove('hidden');
+            
+            // Update risk indicator
+            const riskIndicator = document.getElementById('riskIndicator');
+            riskIndicator.style.left = '80%';
+            
+            // Add data to chart
+            const now = new Date().toLocaleTimeString('fa-IR');
+            fireChart.data.labels.push(now);
+            fireChart.data.datasets[0].data.push(45 + Math.random() * 20);
+            fireChart.data.datasets[1].data.push(20 + Math.random() * 30);
+            
+            if (fireChart.data.labels.length > 10) {
+                fireChart.data.labels.shift();
+                fireChart.data.datasets[0].data.shift();
+                fireChart.data.datasets[1].data.shift();
+            }
+            
+            fireChart.update();
+        }
+        
+        function startDetection() {
+            if (detectionActive) return;
+            
+            detectionActive = true;
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i>در حال اسکن...';
+            button.disabled = true;
+            
+            // Simulate detection process
+            let progress = 0;
+            const detectionInterval = setInterval(() => {
+                progress += 20;
+                
+                if (progress >= 100) {
+                    clearInterval(detectionInterval);
+                    
+                    // Simulate fire detection
+                    if (Math.random() > 0.3) {
+                        detectFire(Math.random() > 0.5 ? 1 : 2);
+                    }
+                    
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    detectionActive = false;
+                }
+            }, 1000);
+        }
+        
+        // Sensitivity slider
+        const sensitivitySlider = document.getElementById('sensitivity');
+        const sensitivityValue = document.getElementById('sensitivityValue');
+        
+        sensitivitySlider.addEventListener('input', function() {
+            sensitivityValue.textContent = this.value;
+            
+            // Update risk indicator based on sensitivity
+            const riskIndicator = document.getElementById('riskIndicator');
+            riskIndicator.style.left = (this.value * 10) + '%';
+        });
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            createFireParticles();
+            initFireChart();
+            
+            // Add some initial data to chart
+            for (let i = 0; i < 5; i++) {
+                const time = new Date(Date.now() - (5-i) * 60000).toLocaleTimeString('fa-IR');
+                fireChart.data.labels.push(time);
+                fireChart.data.datasets[0].data.push(25 + Math.random() * 15);
+                fireChart.data.datasets[1].data.push(40 + Math.random() * 20);
+            }
+            fireChart.update();
+        });
+    </script>
+</body>
+</html>

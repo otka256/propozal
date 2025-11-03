@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>یادگیری فدرال | پروژه پژوهشی هوش مصنوعی</title>
+    <link rel="icon" type="image/jpeg" href="/5778493857136839741.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="/5778493857136839741.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2d9a6f6d5.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Vazirmatn', sans-serif; 
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2d1b69 100%);
+            color: #f1f5f9;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #8b5cf6 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .network-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image: 
+                radial-gradient(circle at 25% 25%, white 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, white 2px, transparent 2px);
+            background-size: 100px 100px;
+            animation: networkMove 20s linear infinite;
+        }
+        
+        @keyframes networkMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .simulation-container {
+            background: linear-gradient(145deg, #1e1b4b, #312e81);
+            border-radius: 20px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.2);
+        }
+        
+        .client-node {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+        }
+        
+        .client-node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.5);
+        }
+        
+        .client-node.active {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(139, 92, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+        }
+        
+        .server-node {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.4);
+        }
+        
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, #8b5cf6, #f59e0b);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .connection-line.active {
+            opacity: 1;
+            animation: dataFlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes dataFlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        
+        .research-card {
+            background: linear-gradient(145deg, #1e1b4b, #312e81);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .research-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+            transition: left 0.8s;
+        }
+        
+        .research-card:hover::before {
+            left: 100%;
+        }
+        
+        .research-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.3);
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: scale(1.05);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+        
+        .algorithm-step {
+            background: linear-gradient(145deg, #1f2937, #374151);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #8b5cf6;
+            transition: all 0.3s ease;
+        }
+        
+        .algorithm-step:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .max-w-7xl { padding: 0 1rem; }
+            .text-5xl { font-size: 2.2rem !important; }
+            .text-xl { font-size: 1rem !important; }
+            .text-3xl { font-size: 1.5rem !important; }
+            .text-2xl { font-size: 1.2rem !important; }
+            .grid, .lg\\:grid-cols-2, .grid-cols-2, .grid-cols-3 { 
+                grid-template-columns: 1fr !important; 
+                gap: 1.5rem;
+            }
+            .bg-gray-800, .bg-purple-900\\/20 { 
+                padding: 1.5rem !important; 
+            }
+            .bg-purple-600 { 
+                padding: 0.8rem 1.5rem !important; 
+                width: 100%;
+            }
+            .network-container { height: 250px !important; }
+            .mb-16 { margin-bottom: 2rem !important; }
+            .p-8 { padding: 1.5rem !important; }
+        }
+        @media (max-width: 480px) {
+            .text-5xl { font-size: 1.8rem !important; }
+            .max-w-7xl { padding: 0 0.8rem; }
+            .bg-gray-800 { padding: 1.2rem !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-indigo-900/95 backdrop-blur-sm border-b border-indigo-700 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="text-xl font-bold text-violet-400 hover:text-white transition">
+                    ← بازگشت به صفحه اصلی
+                </a>
+                <div class="text-lg font-semibold text-white flex items-center">
+                    <i class="fas fa-network-wired text-violet-400 ml-2"></i>
+                    یادگیری فدرال
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section pt-24 pb-16 relative">
+        <div class="network-bg"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="mb-8">
+                <img src="/5778493857136839741.jpg" alt="یادگیری فدرال" class="w-32 h-32 rounded-full mx-auto border-4 border-white/30 object-cover shadow-2xl">
+            </div>
+            <h1 class="text-6xl md:text-7xl font-black text-white mb-6 tracking-tight">
+                یادگیری فدرال
+            </h1>
+            <p class="text-xl md:text-2xl text-violet-100 mb-8 max-w-5xl mx-auto leading-relaxed">
+                آینده هوش مصنوعی: آموزش مدل‌ها بدون به خطر انداختن حریم خصوصی داده‌ها
+            </p>
+            <div class="flex flex-wrap justify-center gap-3 text-sm mb-8">
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#PrivacyPreserving</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#DistributedLearning</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#EdgeComputing</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#Research</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Simulation -->
+    <section class="py-20 bg-gradient-to-b from-indigo-900 to-purple-900">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-12">🔬 شبیه‌سازی تعاملی یادگیری فدرال</h2>
+            
+            <div class="simulation-container p-8 mb-8">
+                <div class="relative h-96">
+                    <!-- Central Server -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div class="server-node" id="server">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="text-center mt-2 text-white font-semibold">سرور مرکزی</div>
+                    </div>
+                    
+                    <!-- Client Nodes -->
+                    <div class="client-node absolute top-8 left-8" id="client1" onclick="activateClient(1)">
+                        <span>1</span>
+                    </div>
+                    <div class="client-node absolute top-8 right-8" id="client2" onclick="activateClient(2)">
+                        <span>2</span>
+                    </div>
+                    <div class="client-node absolute bottom-8 left-8" id="client3" onclick="activateClient(3)">
+                        <span>3</span>
+                    </div>
+                    <div class="client-node absolute bottom-8 right-8" id="client4" onclick="activateClient(4)">
+                        <span>4</span>
+                    </div>
+                    <div class="client-node absolute top-1/2 left-8 transform -translate-y-1/2" id="client5" onclick="activateClient(5)">
+                        <span>5</span>
+                    </div>
+                    <div class="client-node absolute top-1/2 right-8 transform -translate-y-1/2" id="client6" onclick="activateClient(6)">
+                        <span>6</span>
+                    </div>
+                    
+                    <!-- Connection Lines -->
+                    <div class="connection-line" id="line1"></div>
+                    <div class="connection-line" id="line2"></div>
+                    <div class="connection-line" id="line3"></div>
+                    <div class="connection-line" id="line4"></div>
+                    <div class="connection-line" id="line5"></div>
+                    <div class="connection-line" id="line6"></div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button onclick="startFederatedLearning()" class="bg-violet-600 hover:bg-violet-700 text-white px-8 py-4 rounded-xl font-bold transition duration-300 transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-play ml-2"></i>
+                        شروع فرآیند یادگیری فدرال
+                    </button>
+                </div>
+                
+                <div id="simulationStatus" class="mt-6 text-center text-white"></div>
+            </div>
+            
+            <!-- Training Progress -->
+            <div class="bg-gray-800/50 p-6 rounded-xl">
+                <h3 class="text-xl font-bold text-white mb-4">📊 پیشرفت آموزش مدل</h3>
+                <canvas id="trainingChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Details -->
+    <section class="py-20 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">🧠 جزئیات پژوهش</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                <div class="research-card">
+                    <h3 class="text-2xl font-bold text-violet-400 mb-6">🔐 چالش‌های حریم خصوصی</h3>
+                    <div class="space-y-4">
+                        <div class="algorithm-step">
+                            <h4 class="font-bold text-white mb-2">1. Differential Privacy</h4>
+                            <p class="text-gray-300">اضافه کردن نویز کنترل شده برای محافظت از داده‌های فردی</p>
+                        </div>
+                        <div class="algorithm-step">
+                            <h4 class="font-bold text-white mb-2">2. Secure Aggregation</h4>
+                            <p class="text-gray-300">ترکیب امن پارامترهای مدل بدون افشای اطلاعات</p>
+                        </div>
+                        <div class="algorithm-step">
+                            <h4 class="font-bold text-white mb-2">3. Homomorphic Encryption</h4>
+                            <p class="text-gray-300">محاسبه روی داده‌های رمزگذاری شده</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="research-card">
+                    <h3 class="text-2xl font-bold text-violet-400 mb-6">⚡ بهینه‌سازی عملکرد</h3>
+                    <div class="space-y-4">
+                        <div class="algorithm-step">
+                            <h4 class="font-bold text-white mb-2">1. FedAvg Algorithm</h4>
+                            <p class="text-gray-300">میانگین‌گیری وزنی از مدل‌های محلی</p>
+                        </div>
+                        <div class="algorithm-step">
+                            <h4 class="font-bold text-white mb-2">2. Client Selection</h4>
+                            <p class="text-gray-300">انتخاب هوشمند کلاینت‌ها در هر دور آموزش</p>
+                        </div>
+                        <div class="algorithm-step">
+                            <h4 class="font-bold text-white mb-2">3. Compression Techniques</h4>
+                            <p class="text-gray-300">کاهش حجم داده‌های انتقالی</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Metrics -->
+            <div class="grid md:grid-cols-4 gap-6 mb-16">
+                <div class="metric-card">
+                    <div class="text-4xl font-bold text-violet-400 mb-2">98.5%</div>
+                    <div class="text-gray-300">دقت مدل نهایی</div>
+                    <div class="text-sm text-gray-400 mt-2">مقایسه با آموزش متمرکز</div>
+                </div>
+                <div class="metric-card">
+                    <div class="text-4xl font-bold text-violet-400 mb-2">75%</div>
+                    <div class="text-gray-300">کاهش ترافیک شبکه</div>
+                    <div class="text-sm text-gray-400 mt-2">نسبت به روش‌های سنتی</div>
+                </div>
+                <div class="metric-card">
+                    <div class="text-4xl font-bold text-violet-400 mb-2">100+</div>
+                    <div class="text-gray-300">کلاینت همزمان</div>
+                    <div class="text-sm text-gray-400 mt-2">قابلیت مقیاس‌پذیری</div>
+                </div>
+                <div class="metric-card">
+                    <div class="text-4xl font-bold text-violet-400 mb-2">40%</div>
+                    <div class="text-gray-300">کاهش زمان آموزش</div>
+                    <div class="text-sm text-gray-400 mt-2">با بهینه‌سازی‌های اعمال شده</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Applications -->
+    <section class="py-20 bg-indigo-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">🌍 کاربردهای عملی</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="research-card text-center">
+                    <div class="text-5xl text-violet-400 mb-4">🏥</div>
+                    <h3 class="text-xl font-bold text-white mb-4">پزشکی</h3>
+                    <p class="text-gray-300">آموزش مدل‌های تشخیص پزشکی روی داده‌های بیمارستان‌ها بدون به اشتراک‌گذاری اطلاعات بیماران</p>
+                </div>
+                
+                <div class="research-card text-center">
+                    <div class="text-5xl text-violet-400 mb-4">📱</div>
+                    <h3 class="text-xl font-bold text-white mb-4">موبایل</h3>
+                    <p class="text-gray-300">بهبود کیبورد هوشمند و پیش‌بینی متن بدون ارسال داده‌های شخصی به سرور</p>
+                </div>
+                
+                <div class="research-card text-center">
+                    <div class="text-5xl text-violet-400 mb-4">🏦</div>
+                    <h3 class="text-xl font-bold text-white mb-4">مالی</h3>
+                    <p class="text-gray-300">تشخیص تقلب در تراکنش‌های بانکی با حفظ محرمانگی اطلاعات مشتریان</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Publications -->
+    <section class="py-20 bg-gray-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">📚 انتشارات و مقالات</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="research-card">
+                    <h3 class="text-xl font-bold text-violet-400 mb-3">Privacy-Preserving Federated Learning in Healthcare</h3>
+                    <p class="text-gray-300 mb-4">ارائه شده در کنفرانس بین‌المللی یادگیری ماشین</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">2024</span>
+                        <a href="#" class="text-violet-400 hover:text-white transition">
+                            <i class="fas fa-external-link-alt ml-1"></i>
+                            مشاهده مقاله
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="research-card">
+                    <h3 class="text-xl font-bold text-violet-400 mb-3">Efficient Client Selection in Federated Learning</h3>
+                    <p class="text-gray-300 mb-4">پژوهش در زمینه بهینه‌سازی انتخاب کلاینت‌ها</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">2024</span>
+                        <a href="#" class="text-violet-400 hover:text-white transition">
+                            <i class="fas fa-external-link-alt ml-1"></i>
+                            مشاهده مقاله
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-20 bg-gradient-to-r from-violet-900/50 to-purple-900/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold text-white mb-6">🤝 همکاری پژوهشی</h2>
+            <p class="text-xl text-gray-300 mb-8">
+                علاقه‌مند به همکاری در پروژه‌های یادگیری فدرال و حریم خصوصی هستید؟
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/contact.html" 
+                   class="inline-flex items-center px-8 py-4 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl transition duration-300 transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-envelope ml-2"></i>
+                    تماس برای همکاری
+                </a>
+                <a href="#" 
+                   class="inline-flex items-center px-8 py-4 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-file-alt ml-2"></i>
+                    دانلود مقالات
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-indigo-900 border-t border-indigo-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-gray-400">© 2025 سهیل طاهری. تمامی حقوق محفوظ است.</p>
+        </div>
+    </footer>
+
+    <script>
+        let trainingChart;
+        let isTraining = false;
+        
+        // Initialize training chart
+        function initChart() {
+            const ctx = document.getElementById('trainingChart').getContext('2d');
+            trainingChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'دقت مدل (%)',
+                        data: [],
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            min: 0,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+        
+        function activateClient(clientId) {
+            const client = document.getElementById(`client${clientId}`);
+            client.classList.add('active');
+            
+            setTimeout(() => {
+                client.classList.remove('active');
+            }, 3000);
+        }
+        
+        function startFederatedLearning() {
+            if (isTraining) return;
+            
+            isTraining = true;
+            const statusDiv = document.getElementById('simulationStatus');
+            
+            // Reset chart
+            trainingChart.data.labels = [];
+            trainingChart.data.datasets[0].data = [];
+            trainingChart.update();
+            
+            statusDiv.innerHTML = '<div class="text-yellow-400">🔄 شروع فرآیند یادگیری فدرال...</div>';
+            
+            let round = 0;
+            const maxRounds = 10;
+            
+            const trainingInterval = setInterval(() => {
+                round++;
+                
+                // Activate random clients
+                const activeClients = [];
+                for (let i = 1; i <= 6; i++) {
+                    if (Math.random() > 0.5) {
+                        activeClients.push(i);
+                        activateClient(i);
+                    }
+                }
+                
+                // Update status
+                statusDiv.innerHTML = `
+                    <div class="text-blue-400">
+                        📡 دور ${round}: ${activeClients.length} کلاینت در حال آموزش محلی...
+                    </div>
+                `;
+                
+                // Simulate accuracy improvement
+                const accuracy = 60 + (round * 3) + Math.random() * 5;
+                trainingChart.data.labels.push(`دور ${round}`);
+                trainingChart.data.datasets[0].data.push(accuracy.toFixed(1));
+                trainingChart.update();
+                
+                if (round >= maxRounds) {
+                    clearInterval(trainingInterval);
+                    statusDiv.innerHTML = '<div class="text-green-400">✅ یادگیری فدرال با موفقیت تکمیل شد!</div>';
+                    isTraining = false;
+                }
+            }, 2000);
+        }
+        
+        // Initialize chart when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initChart();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چت‌ربات واتساپ هوشمند | راه‌حل GPT برای کسب‌وکار</title>
+    <link rel="icon" type="image/jpeg" href="/5778493857136839741.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="/5778493857136839741.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2d9a6f6d5.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Vazirmatn', sans-serif; 
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+            color: #f1f5f9;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .whatsapp-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .message-bubble {
+            position: absolute;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            border-radius: 20px;
+            padding: 10px 15px;
+            color: white;
+            font-size: 12px;
+            animation: bubbleFloat 6s ease-in-out infinite;
+            max-width: 150px;
+        }
+        
+        @keyframes bubbleFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .chatbot-simulator {
+            background: linear-gradient(145deg, #1f2937, #374151);
+            border-radius: 20px;
+            border: 2px solid rgba(5, 150, 105, 0.3);
+            box-shadow: 0 25px 50px rgba(5, 150, 105, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chat-interface {
+            background: linear-gradient(135deg, #111827, #1f2937);
+            border-radius: 15px;
+            height: 500px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(5, 150, 105, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            padding: 15px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="whatsapp-bg" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23whatsapp-bg)"/></svg>');
+        }
+        
+        .message {
+            margin: 10px 0;
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            animation: messageSlide 0.3s ease-out;
+        }
+        
+        @keyframes messageSlide {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .message.user {
+            background: linear-gradient(135deg, #dcf8c6, #b8e6b8);
+            color: #333;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.bot {
+            background: white;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .chat-input {
+            padding: 15px;
+            background: #f0f0f0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 25px;
+            background: white;
+            outline: none;
+        }
+        
+        .send-button {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .send-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        }
+        
+        .business-showcase {
+            background: linear-gradient(145deg, #1f2937, #374151);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(5, 150, 105, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .business-showcase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(5, 150, 105, 0.1), transparent);
+            transition: left 0.8s;
+        }
+        
+        .business-showcase:hover::before {
+            left: 100%;
+        }
+        
+        .business-showcase:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(5, 150, 105, 0.3);
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #059669;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(5, 150, 105, 0.2);
+        }
+        
+        .demo-button {
+            background: linear-gradient(135deg, #059669, #047857);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
+        }
+        
+        .demo-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.4);
+        }
+        
+        .analytics-panel {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 10px 16px;
+            background: white;
+            border-radius: 18px;
+            margin: 10px 0;
+            max-width: 70%;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typingDot 1.4s ease-in-out infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typingDot {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .max-w-7xl { padding: 0 1rem; }
+            .text-5xl { font-size: 2.2rem !important; }
+            .text-xl { font-size: 1rem !important; }
+            .text-3xl { font-size: 1.5rem !important; }
+            .text-2xl { font-size: 1.2rem !important; }
+            .grid, .lg\\:grid-cols-2, .grid-cols-2, .grid-cols-3 { 
+                grid-template-columns: 1fr !important; 
+                gap: 1.5rem;
+            }
+            .bg-gray-800, .bg-green-900\/20 { 
+                padding: 1.5rem !important; 
+            }
+            .bg-green-600 { 
+                padding: 0.8rem 1.5rem !important; 
+                width: 100%;
+            }
+            .chat-container { height: 300px !important; }
+            .mb-16 { margin-bottom: 2rem !important; }
+            .p-8 { padding: 1.5rem !important; }
+        }
+        @media (max-width: 480px) {
+            .text-5xl { font-size: 1.8rem !important; }
+            .max-w-7xl { padding: 0 0.8rem; }
+            .bg-gray-800 { padding: 1.2rem !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-emerald-900/95 backdrop-blur-sm border-b border-emerald-700 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="text-xl font-bold text-emerald-400 hover:text-white transition">
+                    ← بازگشت به صفحه اصلی
+                </a>
+                <div class="text-lg font-semibold text-white flex items-center">
+                    <i class="fab fa-whatsapp text-emerald-400 ml-2"></i>
+                    چت‌ربات واتساپ هوشمند
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section pt-24 pb-16 relative">
+        <div class="whatsapp-particles" id="whatsappParticles"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="mb-8">
+                <img src="/5778493857136839741.jpg" alt="چت‌ربات واتساپ هوشمند" class="w-32 h-32 rounded-full mx-auto border-4 border-white/30 object-cover shadow-2xl">
+            </div>
+            <h1 class="text-6xl md:text-7xl font-black text-white mb-6 tracking-tight">
+                چت‌ربات واتساپ هوشمند
+            </h1>
+            <p class="text-xl md:text-2xl text-emerald-100 mb-8 max-w-5xl mx-auto leading-relaxed">
+                راه‌حل کامل اتوماسیون خدمات مشتریان با قدرت GPT و امنیت کامل داده‌ها
+            </p>
+            <div class="flex flex-wrap justify-center gap-3 text-sm mb-8">
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#GPT-Integration</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#WhatsApp-API</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#CustomerService</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#BusinessAutomation</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Chatbot Demo -->
+    <section class="py-20 bg-gradient-to-b from-emerald-900 to-teal-900">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-12">💬 تست زنده چت‌ربات</h2>
+            
+            <div class="chatbot-simulator p-8">
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Chat Interface -->
+                    <div class="lg:col-span-2">
+                        <div class="chat-interface">
+                            <div class="chat-header">
+                                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-robot text-white"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">ربات پشتیبانی</div>
+                                    <div class="text-sm opacity-75">آنلاین</div>
+                                </div>
+                                <div class="mr-auto">
+                                    <i class="fas fa-phone text-white/60"></i>
+                                    <i class="fas fa-video text-white/60 mr-2"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="message bot">
+                                    سلام! من ربات پشتیبانی هستم. چطور می‌تونم کمکتون کنم؟ 😊
+                                </div>
+                            </div>
+                            
+                            <div class="typing-indicator" id="typingIndicator">
+                                <div class="typing-dots">
+                                    <div class="typing-dot"></div>
+                                    <div class="typing-dot"></div>
+                                    <div class="typing-dot"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-input">
+                                <input type="text" id="messageInput" placeholder="پیام خود را بنویسید..." onkeypress="handleKeyPress(event)">
+                                <button class="send-button" onclick="sendMessage()">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Control Panel -->
+                    <div class="space-y-6">
+                        <div class="analytics-panel">
+                            <h3 class="text-xl font-bold text-white mb-4">⚙️ تنظیمات ربات</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-white font-semibold mb-2">شخصیت ربات:</label>
+                                    <select id="botPersonality" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600">
+                                        <option value="friendly">دوستانه</option>
+                                        <option value="professional">حرفه‌ای</option>
+                                        <option value="casual">غیررسمی</option>
+                                        <option value="technical">فنی</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-white font-semibold mb-2">زبان پاسخ:</label>
+                                    <select id="responseLanguage" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600">
+                                        <option value="fa">فارسی</option>
+                                        <option value="en">انگلیسی</option>
+                                        <option value="mixed">ترکیبی</option>
+                                    </select>
+                                </div>
+                                
+                                <button onclick="resetChat()" class="demo-button w-full">
+                                    <i class="fas fa-refresh ml-2"></i>
+                                    شروع مجدد چت
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics-panel">
+                            <h3 class="text-xl font-bold text-white mb-4">📊 آمار لحظه‌ای</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">پیام‌های امروز:</span>
+                                    <span class="text-white font-bold" id="todayMessages">1,247</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">زمان پاسخ:</span>
+                                    <span class="text-emerald-400 font-bold">0.8 ثانیه</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">رضایت مشتری:</span>
+                                    <span class="text-emerald-400 font-bold">94%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">حل مسئله:</span>
+                                    <span class="text-emerald-400 font-bold">87%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics-panel">
+                            <h3 class="text-xl font-bold text-white mb-4">🎯 پیام‌های پیشنهادی</h3>
+                            <div class="space-y-2">
+                                <button onclick="sendSampleMessage('سلام، چطور می‌تونم سفارش بدم؟')" class="w-full text-right p-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm transition">
+                                    سلام، چطور می‌تونم سفارش بدم؟
+                                </button>
+                                <button onclick="sendSampleMessage('قیمت محصولات چقدره؟')" class="w-full text-right p-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm transition">
+                                    قیمت محصولات چقدره؟
+                                </button>
+                                <button onclick="sendSampleMessage('سفارشم کی ارسال میشه؟')" class="w-full text-right p-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm transition">
+                                    سفارشم کی ارسال میشه؟
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analytics Chart -->
+                <div class="bg-gray-800 rounded-xl p-6 mt-8">
+                    <h3 class="text-white font-bold mb-4">📈 آمار مکالمات</h3>
+                    <canvas id="conversationChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Features -->
+    <section class="py-20 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">🚀 ویژگی‌های کسب‌وکاری</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                <div class="business-showcase">
+                    <h3 class="text-2xl font-bold text-emerald-400 mb-6">🤖 قابلیت‌های هوشمند</h3>
+                    <div class="space-y-4">
+                        <div class="feature-card">
+                            <h4 class="font-bold text-white mb-2">1. پردازش زبان طبیعی</h4>
+                            <p class="text-gray-300">درک و پاسخ به پیام‌های فارسی و انگلیسی با دقت 96%</p>
+                            <div class="text-sm text-emerald-400 mt-2">پشتیبانی از 15 زبان</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4 class="font-bold text-white mb-2">2. یادگیری تطبیقی</h4>
+                            <p class="text-gray-300">بهبود مداوم پاسخ‌ها بر اساس تعامل با مشتریان</p>
+                            <div class="text-sm text-emerald-400 mt-2">بهبود 15% ماهانه</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4 class="font-bold text-white mb-2">3. تحلیل احساسات</h4>
+                            <p class="text-gray-300">تشخیص حالت مشتری و تنظیم نحوه پاسخگویی</p>
+                            <div class="text-sm text-emerald-400 mt-2">دقت: 92%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="business-showcase">
+                    <h3 class="text-2xl font-bold text-emerald-400 mb-6">🔧 مدیریت و کنترل</h3>
+                    <div class="space-y-4">
+                        <div class="feature-card">
+                            <h4 class="font-bold text-white mb-2">1. داشبورد مدیریت</h4>
+                            <p class="text-gray-300">نظارت بر تمام مکالمات و آمارگیری دقیق</p>
+                            <div class="text-sm text-emerald-400 mt-2">گزارش‌گیری لحظه‌ای</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4 class="font-bold text-white mb-2">2. یکپارچه‌سازی CRM</h4>
+                            <p class="text-gray-300">اتصال به سیستم‌های مدیریت ارتباط با مشتری</p>
+                            <div class="text-sm text-emerald-400 mt-2">API کامل</div>
+                        </div>
+                        <div class="feature-card">
+                            <h4 class="font-bold text-white mb-2">3. امنیت کامل</h4>
+                            <p class="text-gray-300">رمزگذاری end-to-end و حفظ حریم خصوصی</p>
+                            <div class="text-sm text-emerald-400 mt-2">استاندارد GDPR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ROI Calculator -->
+            <div class="business-showcase">
+                <h3 class="text-3xl font-bold text-emerald-400 mb-8 text-center">💰 محاسبه‌گر بازگشت سرمایه</h3>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">تعداد مشتری روزانه:</label>
+                            <input type="number" id="dailyCustomers" value="100" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600" onchange="calculateROI()">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">هزینه پرسنل (ماهانه):</label>
+                            <input type="number" id="staffCost" value="50000000" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600" onchange="calculateROI()">
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">زمان پاسخ فعلی (دقیقه):</label>
+                            <input type="number" id="currentResponseTime" value="15" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600" onchange="calculateROI()">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">نرخ حل مسئله فعلی (%):</label>
+                            <input type="number" id="currentResolutionRate" value="70" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600" onchange="calculateROI()">
+                        </div>
+                    </div>
+                    
+                    <div class="bg-emerald-800/30 p-6 rounded-lg border border-emerald-600">
+                        <h4 class="text-xl font-bold text-white mb-4">نتایج:</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-300">صرفه‌جویی ماهانه:</span>
+                                <span class="text-emerald-400 font-bold" id="monthlySavings">35,000,000 تومان</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-300">بازگشت سرمایه:</span>
+                                <span class="text-emerald-400 font-bold" id="roiPeriod">3 ماه</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-300">افزایش رضایت:</span>
+                                <span class="text-emerald-400 font-bold">+25%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="py-20 bg-emerald-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">📊 داستان‌های موفقیت</h2>
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="business-showcase text-center">
+                    <div class="text-5xl text-emerald-400 mb-4">🛒</div>
+                    <h3 class="text-xl font-bold text-white mb-4">فروشگاه آنلاین</h3>
+                    <p class="text-gray-300">کاهش 80% زمان پاسخ و افزایش 45% فروش</p>
+                    <div class="mt-4 text-emerald-400 font-semibold">ROI: 400% در 6 ماه</div>
+                </div>
+                
+                <div class="business-showcase text-center">
+                    <div class="text-5xl text-emerald-400 mb-4">🏥</div>
+                    <h3 class="text-xl font-bold text-white mb-4">کلینیک پزشکی</h3>
+                    <p class="text-gray-300">اتوماسیون 90% نوبت‌دهی و کاهش 60% تماس‌ها</p>
+                    <div class="mt-4 text-emerald-400 font-semibold">صرفه‌جویی 20 میلیون ماهانه</div>
+                </div>
+                
+                <div class="business-showcase text-center">
+                    <div class="text-5xl text-emerald-400 mb-4">🍕</div>
+                    <h3 class="text-xl font-bold text-white mb-4">رستوران زنجیره‌ای</h3>
+                    <p class="text-gray-300">پردازش 2000+ سفارش روزانه بدون خطا</p>
+                    <div class="mt-4 text-emerald-400 font-semibold">افزایش 35% سفارشات</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-20 bg-gradient-to-r from-emerald-900/50 to-teal-900/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold text-white mb-6">🚀 آماده برای انقلاب در خدمات مشتریان؟</h2>
+            <p class="text-xl text-gray-300 mb-8">
+                چت‌ربات ما می‌تواند هزینه‌های پشتیبانی را تا 70% کاهش دهد
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/contact.html" 
+                   class="inline-flex items-center px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition duration-300 transform hover:scale-105 shadow-lg">
+                    <i class="fab fa-whatsapp ml-2"></i>
+                    راه‌اندازی چت‌ربات
+                </a>
+                <a href="#" 
+                   class="inline-flex items-center px-8 py-4 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-play ml-2"></i>
+                    مشاهده دمو کامل
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-emerald-900 border-t border-emerald-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-gray-400">© 2025 سهیل طاهری. تمامی حقوق محفوظ است.</p>
+        </div>
+    </footer>
+
+    <script>
+        let conversationChart;
+        let messageCount = 0;
+        
+        // Initialize WhatsApp particles
+        function createWhatsAppParticles() {
+            const container = document.getElementById('whatsappParticles');
+            const messages = [
+                'سلام! چطور می‌تونم کمکتون کنم؟',
+                'سفارش شما آماده شد 📦',
+                'ممنون از انتخابتون! 😊',
+                'پشتیبانی 24/7 در خدمتتون',
+                'کیفیت بالا، قیمت مناسب 💯'
+            ];
+            
+            setInterval(() => {
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble';
+                bubble.textContent = messages[Math.floor(Math.random() * messages.length)];
+                bubble.style.left = Math.random() * 80 + 10 + '%';
+                bubble.style.animationDelay = Math.random() * 2 + 's';
+                bubble.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                
+                container.appendChild(bubble);
+                
+                setTimeout(() => {
+                    bubble.remove();
+                }, 7000);
+            }, 1500);
+        }
+        
+        // Initialize conversation chart
+        function initConversationChart() {
+            const ctx = document.getElementById('conversationChart').getContext('2d');
+            conversationChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['حل شده', 'در انتظار', 'ارجاع به انسان'],
+                    datasets: [{
+                        data: [87, 8, 5],
+                        backgroundColor: ['#059669', '#fbbf24', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: 'white' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Simulate bot response
+            setTimeout(() => {
+                hideTypingIndicator();
+                const botResponse = generateBotResponse(message);
+                addMessage(botResponse, 'bot');
+                updateStats();
+            }, 1500);
+        }
+        
+        function sendSampleMessage(message) {
+            document.getElementById('messageInput').value = message;
+            sendMessage();
+        }
+        
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = text;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            messageCount++;
+        }
+        
+        function generateBotResponse(userMessage) {
+            const responses = {
+                'سلام': 'سلام! خوش آمدید. چطور می‌تونم کمکتون کنم؟ 😊',
+                'قیمت': 'قیمت محصولات ما بسیار رقابتی است. برای اطلاع از قیمت دقیق، لطفاً کد محصول را ارسال کنید.',
+                'سفارش': 'برای ثبت سفارش، می‌تونید از منوی زیر استفاده کنید یا مستقیماً نام محصول را بفرستید.',
+                'ارسال': 'زمان ارسال معمولاً 2-3 روز کاری است. برای پیگیری سفارش، کد رهگیری را ارسال کنید.',
+                'پشتیبانی': 'تیم پشتیبانی ما 24/7 در خدمت شماست. سوال خود را مطرح کنید.',
+                'default': 'متوجه نشدم. می‌تونید سوالتون رو واضح‌تر بپرسید؟ یا از گزینه‌های زیر استفاده کنید:\n• قیمت محصولات\n• نحوه سفارش\n• پیگیری ارسال'
+            };
+            
+            const lowerMessage = userMessage.toLowerCase();
+            
+            for (const [key, response] of Object.entries(responses)) {
+                if (lowerMessage.includes(key)) {
+                    return response;
+                }
+            }
+            
+            return responses.default;
+        }
+        
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'block';
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        function resetChat() {
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.innerHTML = `
+                <div class="message bot">
+                    سلام! من ربات پشتیبانی هستم. چطور می‌تونم کمکتون کنم؟ 😊
+                </div>
+            `;
+            messageCount = 1;
+            updateStats();
+        }
+        
+        function updateStats() {
+            document.getElementById('todayMessages').textContent = (1200 + messageCount).toLocaleString();
+        }
+        
+        function calculateROI() {
+            const dailyCustomers = parseInt(document.getElementById('dailyCustomers').value) || 100;
+            const staffCost = parseInt(document.getElementById('staffCost').value) || 50000000;
+            const currentResponseTime = parseInt(document.getElementById('currentResponseTime').value) || 15;
+            const currentResolutionRate = parseInt(document.getElementById('currentResolutionRate').value) || 70;
+            
+            // Calculate savings (simplified calculation)
+            const botEfficiency = 0.7; // 70% of queries handled by bot
+            const staffSavings = staffCost * botEfficiency;
+            const monthlySavings = Math.floor(staffSavings);
+            
+            // Calculate ROI period (assuming bot costs 10M setup + 2M monthly)
+            const botCost = 10000000 + (2000000 * 12); // Setup + yearly maintenance
+            const roiMonths = Math.ceil(botCost / monthlySavings);
+            
+            document.getElementById('monthlySavings').textContent = monthlySavings.toLocaleString() + ' تومان';
+            document.getElementById('roiPeriod').textContent = roiMonths + ' ماه';
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            createWhatsAppParticles();
+            initConversationChart();
+            calculateROI();
+            
+            // Add initial welcome message
+            setTimeout(() => {
+                addMessage('برای شروع، یکی از پیام‌های پیشنهادی را انتخاب کنید یا سوال خود را بپرسید.', 'bot');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

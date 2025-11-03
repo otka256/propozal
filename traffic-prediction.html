@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سامانه پیش‌بینی ترافیک | راه‌حل هوشمند مدیریت شهری</title>
+    <link rel="icon" type="image/jpeg" href="/5778493857136839741.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="/5778493857136839741.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2d9a6f6d5.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Vazirmatn', sans-serif; 
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
+            color: #f1f5f9;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .traffic-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .car-particle {
+            position: absolute;
+            width: 20px;
+            height: 12px;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            border-radius: 6px;
+            animation: carMove 8s linear infinite;
+        }
+        
+        @keyframes carMove {
+            0% { transform: translateX(-100px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateX(calc(100vw + 100px)); opacity: 0; }
+        }
+        
+        .traffic-simulator {
+            background: linear-gradient(145deg, #1f2937, #374151);
+            border-radius: 20px;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 25px 50px rgba(220, 38, 38, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .city-map {
+            background: linear-gradient(135deg, #065f46, #047857);
+            border-radius: 15px;
+            height: 500px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .road {
+            position: absolute;
+            background: #374151;
+            border: 2px solid #6b7280;
+        }
+        
+        .road.horizontal {
+            height: 40px;
+            width: 100%;
+        }
+        
+        .road.vertical {
+            width: 40px;
+            height: 100%;
+        }
+        
+        .traffic-light {
+            position: absolute;
+            width: 20px;
+            height: 60px;
+            background: #1f2937;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 5px;
+        }
+        
+        .light {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #374151;
+        }
+        
+        .light.red { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+        .light.yellow { background: #fbbf24; box-shadow: 0 0 10px #fbbf24; }
+        .light.green { background: #22c55e; box-shadow: 0 0 10px #22c55e; }
+        
+        .vehicle {
+            position: absolute;
+            width: 30px;
+            height: 15px;
+            border-radius: 8px;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .vehicle.car { background: #3b82f6; }
+        .vehicle.truck { background: #f59e0b; width: 40px; }
+        .vehicle.bus { background: #8b5cf6; width: 50px; height: 20px; }
+        
+        .congestion-low { background: #22c55e !important; }
+        .congestion-medium { background: #fbbf24 !important; }
+        .congestion-high { background: #ef4444 !important; }
+        
+        .prediction-panel {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .traffic-metrics {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .tech-showcase {
+            background: linear-gradient(145deg, #1f2937, #374151);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tech-showcase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+            transition: left 0.8s;
+        }
+        
+        .tech-showcase:hover::before {
+            left: 100%;
+        }
+        
+        .tech-showcase:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(220, 38, 38, 0.3);
+        }
+        
+        .algorithm-card {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #dc2626;
+            transition: all 0.3s ease;
+        }
+        
+        .algorithm-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
+        }
+        
+        .predict-button {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+        }
+        
+        .predict-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(220, 38, 38, 0.4);
+        }
+        
+        .route-optimizer {
+            background: linear-gradient(135deg, #065f46, #047857);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid rgba(34, 197, 94, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container { max-width: 100%; padding: 0 2rem; }
+            .hero-section { padding: 4rem 0; }
+            .grid { grid-template-columns: 1fr; gap: 2rem; }
+            .lg\\:grid-cols-2 { grid-template-columns: 1fr !important; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            /* Layout */
+            .max-w-7xl { padding: 0 1rem; }
+            .hero-section { 
+                padding: 3rem 0 2rem; 
+                text-align: center;
+            }
+            
+            /* Typography */
+            .text-5xl { 
+                font-size: 2.2rem !important; 
+                line-height: 1.2;
+                margin-bottom: 1rem;
+            }
+            .text-xl { 
+                font-size: 1rem !important; 
+                margin-bottom: 2rem;
+            }
+            .text-3xl { font-size: 1.5rem !important; }
+            .text-2xl { font-size: 1.2rem !important; }
+            .text-lg { font-size: 1rem !important; }
+            
+            /* Grid */
+            .grid, .lg\\:grid-cols-2, .grid-cols-2, .grid-cols-3, .grid-cols-4 { 
+                grid-template-columns: 1fr !important; 
+                gap: 1.5rem;
+            }
+            .stats-grid { 
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            /* Cards */
+            .bg-gray-800, .bg-green-900\\/20 { 
+                padding: 1.5rem !important; 
+                margin-bottom: 1rem;
+            }
+            
+            /* Traffic Map */
+            .traffic-map { 
+                height: 250px !important;
+                margin: 1rem 0;
+            }
+            .intersection { 
+                width: 30px !important; 
+                height: 30px !important;
+            }
+            .road { 
+                width: 15px !important;
+            }
+            .vehicle { 
+                width: 8px !important; 
+                height: 8px !important;
+            }
+            .light { 
+                width: 6px !important; 
+                height: 6px !important;
+            }
+            
+            /* Buttons */
+            .bg-green-600, .prediction-button { 
+                padding: 0.8rem 1.5rem !important; 
+                font-size: 0.9rem;
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 1rem;
+            }
+            
+            /* Chart Container */
+            .chart-container { 
+                height: 250px !important;
+                margin: 1rem 0;
+            }
+            
+            /* Route Optimizer */
+            .route-optimizer { 
+                padding: 1rem !important;
+                margin: 1rem 0 !important;
+            }
+            
+            /* Navigation */
+            .nav-link { 
+                padding: 0.5rem !important;
+                font-size: 0.9rem;
+            }
+            
+            /* Spacing */
+            .mb-16 { margin-bottom: 2rem !important; }
+            .mb-12 { margin-bottom: 1.5rem !important; }
+            .mb-8 { margin-bottom: 1rem !important; }
+            .p-8 { padding: 1.5rem !important; }
+            .p-6 { padding: 1.2rem !important; }
+        }
+
+        @media (max-width: 480px) {
+            .text-5xl { font-size: 1.8rem !important; }
+            .max-w-7xl { padding: 0 0.8rem; }
+            .bg-gray-800, .bg-green-900\\/20 { padding: 1.2rem !important; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .chart-container { height: 200px !important; }
+            .traffic-map { height: 200px !important; }
+            .route-optimizer { padding: 0.8rem !important; }
+        }
+
+        /* Touch Optimization */
+        @media (hover: none) and (pointer: coarse) {
+            .prediction-button, .nav-link, .bg-green-600 {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            .prediction-button:hover { transform: none; }
+            .prediction-button:active { transform: scale(0.95); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-red-900/95 backdrop-blur-sm border-b border-red-700 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="text-xl font-bold text-red-400 hover:text-white transition">
+                    ← بازگشت به صفحه اصلی
+                </a>
+                <div class="text-lg font-semibold text-white flex items-center">
+                    <i class="fas fa-traffic-light text-red-400 ml-2"></i>
+                    سامانه پیش‌بینی ترافیک
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section pt-24 pb-16 relative">
+        <div class="traffic-particles" id="trafficParticles"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="mb-8">
+                <img src="/5778493857136839741.jpg" alt="سامانه پیش‌بینی ترافیک" class="w-32 h-32 rounded-full mx-auto border-4 border-white/30 object-cover shadow-2xl">
+            </div>
+            <h1 class="text-6xl md:text-7xl font-black text-white mb-6 tracking-tight">
+                پیش‌بینی ترافیک هوشمند
+            </h1>
+            <p class="text-xl md:text-2xl text-red-100 mb-8 max-w-5xl mx-auto leading-relaxed">
+                سیستم هوشمند مدیریت ترافیک شهری با دقت 94% و کاهش 40% زمان سفر
+            </p>
+            <div class="flex flex-wrap justify-center gap-3 text-sm mb-8">
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#MachineLearning</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#SmartCity</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#IoT</span>
+                <span class="bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">#RealTimeData</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Traffic Simulator -->
+    <section class="py-20 bg-gradient-to-b from-red-900 to-orange-900">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-12">🚦 شبیه‌ساز ترافیک شهری</h2>
+            
+            <div class="traffic-simulator p-8">
+                <!-- City Map -->
+                <div class="city-map mb-8" id="cityMap">
+                    <!-- Roads -->
+                    <div class="road horizontal" style="top: 100px;"></div>
+                    <div class="road horizontal" style="top: 250px;"></div>
+                    <div class="road horizontal" style="top: 400px;"></div>
+                    <div class="road vertical" style="left: 150px;"></div>
+                    <div class="road vertical" style="left: 350px;"></div>
+                    <div class="road vertical" style="right: 150px;"></div>
+                    
+                    <!-- Traffic Lights -->
+                    <div class="traffic-light" style="top: 80px; left: 130px;" id="light1">
+                        <div class="light red"></div>
+                        <div class="light"></div>
+                        <div class="light"></div>
+                    </div>
+                    <div class="traffic-light" style="top: 230px; left: 330px;" id="light2">
+                        <div class="light"></div>
+                        <div class="light yellow"></div>
+                        <div class="light"></div>
+                    </div>
+                    <div class="traffic-light" style="top: 380px; right: 170px;" id="light3">
+                        <div class="light"></div>
+                        <div class="light"></div>
+                        <div class="light green"></div>
+                    </div>
+                    
+                    <!-- Vehicles -->
+                    <div class="vehicle car" style="top: 110px; left: 50px;" onclick="selectVehicle(this)"></div>
+                    <div class="vehicle truck" style="top: 260px; left: 200px;" onclick="selectVehicle(this)"></div>
+                    <div class="vehicle bus" style="top: 410px; right: 100px;" onclick="selectVehicle(this)"></div>
+                    <div class="vehicle car congestion-high" style="top: 110px; left: 300px;" onclick="selectVehicle(this)"></div>
+                    <div class="vehicle car congestion-medium" style="top: 260px; right: 200px;" onclick="selectVehicle(this)"></div>
+                </div>
+                
+                <!-- Control Panel -->
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div class="prediction-panel">
+                        <h3 class="text-xl font-bold text-white mb-4">🎯 تنظیمات پیش‌بینی</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-white font-semibold mb-2">بازه زمانی پیش‌بینی:</label>
+                                <select id="timeRange" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600">
+                                    <option value="30">30 دقیقه آینده</option>
+                                    <option value="60">1 ساعت آینده</option>
+                                    <option value="120">2 ساعت آینده</option>
+                                    <option value="240">4 ساعت آینده</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-white font-semibold mb-2">منطقه مورد نظر:</label>
+                                <select id="area" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600">
+                                    <option value="downtown">مرکز شهر</option>
+                                    <option value="north">شمال شهر</option>
+                                    <option value="south">جنوب شهر</option>
+                                    <option value="highway">بزرگراه‌ها</option>
+                                </select>
+                            </div>
+                            
+                            <button onclick="predictTraffic()" class="predict-button w-full">
+                                <i class="fas fa-chart-line ml-2"></i>
+                                پیش‌بینی ترافیک
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="traffic-metrics">
+                        <h3 class="text-xl font-bold text-white mb-4">📊 آمار لحظه‌ای</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-300">سرعت متوسط:</span>
+                                <span class="text-2xl font-bold text-white" id="avgSpeed">45 km/h</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-300">تراکم ترافیک:</span>
+                                <span class="text-2xl font-bold text-red-400" id="trafficDensity">متوسط</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-300">تعداد خودرو:</span>
+                                <span class="text-2xl font-bold text-white" id="vehicleCount">1,247</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-300">زمان تأخیر:</span>
+                                <span class="text-2xl font-bold text-yellow-400" id="delayTime">12 دقیقه</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Route Optimizer -->
+                <div class="route-optimizer">
+                    <h3 class="text-xl font-bold text-white mb-4">🗺️ بهینه‌ساز مسیر</h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">مبدأ:</label>
+                            <input type="text" id="origin" placeholder="آدرس مبدأ" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">مقصد:</label>
+                            <input type="text" id="destination" placeholder="آدرس مقصد" class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="optimizeRoute()" class="predict-button w-full">
+                                <i class="fas fa-route ml-2"></i>
+                                بهترین مسیر
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="routeResults" class="mt-6 hidden">
+                        <h4 class="font-bold text-white mb-3">🎯 مسیرهای پیشنهادی:</h4>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="bg-green-800/50 p-4 rounded-lg border border-green-600">
+                                <h5 class="font-bold text-green-400">مسیر سریع</h5>
+                                <p class="text-white">زمان: 25 دقیقه</p>
+                                <p class="text-gray-300">مسافت: 18 کیلومتر</p>
+                            </div>
+                            <div class="bg-blue-800/50 p-4 rounded-lg border border-blue-600">
+                                <h5 class="font-bold text-blue-400">مسیر اقتصادی</h5>
+                                <p class="text-white">زمان: 32 دقیقه</p>
+                                <p class="text-gray-300">مسافت: 15 کیلومتر</p>
+                            </div>
+                            <div class="bg-purple-800/50 p-4 rounded-lg border border-purple-600">
+                                <h5 class="font-bold text-purple-400">مسیر راحت</h5>
+                                <p class="text-white">زمان: 28 دقیقه</p>
+                                <p class="text-gray-300">مسافت: 20 کیلومتر</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Real-time Traffic Chart -->
+                <div class="bg-gray-800 rounded-xl p-6 mt-8">
+                    <h3 class="text-white font-bold mb-4">📈 نمودار ترافیک زمان واقعی</h3>
+                    <canvas id="trafficChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology & Algorithms -->
+    <section class="py-20 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">🧠 فناوری‌های هوشمند</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                <div class="tech-showcase">
+                    <h3 class="text-2xl font-bold text-red-400 mb-6">🤖 یادگیری ماشین</h3>
+                    <div class="space-y-4">
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">1. LSTM Neural Networks</h4>
+                            <p class="text-gray-300">شبکه‌های عصبی حافظه طولانی برای پیش‌بینی الگوهای ترافیک</p>
+                            <div class="text-sm text-red-400 mt-2">دقت: 94.2%</div>
+                        </div>
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">2. Random Forest</h4>
+                            <p class="text-gray-300">الگوریتم جنگل تصادفی برای تحلیل عوامل مؤثر بر ترافیک</p>
+                            <div class="text-sm text-red-400 mt-2">ویژگی‌ها: 50+</div>
+                        </div>
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">3. Reinforcement Learning</h4>
+                            <p class="text-gray-300">یادگیری تقویتی برای بهینه‌سازی چراغ‌های راهنمایی</p>
+                            <div class="text-sm text-red-400 mt-2">بهبود: 35% کاهش تأخیر</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tech-showcase">
+                    <h3 class="text-2xl font-bold text-red-400 mb-6">📡 منابع داده</h3>
+                    <div class="space-y-4">
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">1. IoT Sensors</h4>
+                            <p class="text-gray-300">سنسورهای هوشمند نصب شده در سطح شهر</p>
+                            <div class="text-sm text-red-400 mt-2">تعداد: 2000+ سنسور</div>
+                        </div>
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">2. GPS Data</h4>
+                            <p class="text-gray-300">داده‌های موقعیت یابی از میلیون‌ها خودرو</p>
+                            <div class="text-sm text-red-400 mt-2">حجم: 10TB روزانه</div>
+                        </div>
+                        <div class="algorithm-card">
+                            <h4 class="font-bold text-white mb-2">3. Weather & Events</h4>
+                            <p class="text-gray-300">اطلاعات آب و هوا و رویدادهای شهری</p>
+                            <div class="text-sm text-red-400 mt-2">بروزرسانی: هر 5 دقیقه</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Metrics -->
+            <div class="grid md:grid-cols-4 gap-6 mb-16">
+                <div class="tech-showcase text-center">
+                    <div class="text-4xl font-bold text-red-400 mb-2">94.2%</div>
+                    <div class="text-gray-300">دقت پیش‌بینی</div>
+                    <div class="text-sm text-gray-400 mt-2">در شرایط عادی</div>
+                </div>
+                <div class="tech-showcase text-center">
+                    <div class="text-4xl font-bold text-red-400 mb-2">40%</div>
+                    <div class="text-gray-300">کاهش زمان سفر</div>
+                    <div class="text-sm text-gray-400 mt-2">در ساعات پیک</div>
+                </div>
+                <div class="tech-showcase text-center">
+                    <div class="text-4xl font-bold text-red-400 mb-2">2 ثانیه</div>
+                    <div class="text-gray-300">زمان پردازش</div>
+                    <div class="text-sm text-gray-400 mt-2">برای هر درخواست</div>
+                </div>
+                <div class="tech-showcase text-center">
+                    <div class="text-4xl font-bold text-red-400 mb-2">1M+</div>
+                    <div class="text-gray-300">کاربر فعال</div>
+                    <div class="text-sm text-gray-400 mt-2">روزانه</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Smart City Impact -->
+    <section class="py-20 bg-red-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center text-white mb-16">🏙️ تأثیر بر شهر هوشمند</h2>
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="tech-showcase text-center">
+                    <div class="text-5xl text-red-400 mb-4">🌱</div>
+                    <h3 class="text-xl font-bold text-white mb-4">کاهش آلودگی</h3>
+                    <p class="text-gray-300">کاهش 30% انتشار CO2 با بهینه‌سازی مسیرها</p>
+                    <div class="mt-4 text-red-400 font-semibold">نجات 500 تن CO2 سالانه</div>
+                </div>
+                
+                <div class="tech-showcase text-center">
+                    <div class="text-5xl text-red-400 mb-4">⏱️</div>
+                    <h3 class="text-xl font-bold text-white mb-4">صرفه‌جویی زمان</h3>
+                    <p class="text-gray-300">صرفه‌جویی 2 ساعت روزانه برای هر شهروند</p>
+                    <div class="mt-4 text-red-400 font-semibold">10 میلیون ساعت سالانه</div>
+                </div>
+                
+                <div class="tech-showcase text-center">
+                    <div class="text-5xl text-red-400 mb-4">💰</div>
+                    <h3 class="text-xl font-bold text-white mb-4">کاهش هزینه‌ها</h3>
+                    <p class="text-gray-300">کاهش 25% هزینه‌های سوخت و نگهداری</p>
+                    <div class="mt-4 text-red-400 font-semibold">صرفه‌جویی 50 میلیارد تومان</div>
+                </div>
+            </div>
+            
+            <!-- Success Stories -->
+            <div class="tech-showcase">
+                <h3 class="text-3xl font-bold text-red-400 mb-8 text-center">📊 نتایج پیاده‌سازی</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-4">🚦 تهران - منطقه 1</h4>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• کاهش 45% زمان انتظار در چراغ‌ها</li>
+                            <li>• افزایش 60% سرعت متوسط</li>
+                            <li>• کاهش 35% مصرف سوخت</li>
+                            <li>• رضایت 92% شهروندان</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-4">🛣️ بزرگراه آزادگان</h4>
+                        <ul class="text-gray-300 space-y-2">
+                            <li>• کاهش 50% ترافیک در ساعات پیک</li>
+                            <li>• پیش‌بینی 95% تصادفات</li>
+                            <li>• کاهش 40% زمان سفر</li>
+                            <li>• افزایش 80% ایمنی جاده</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-20 bg-gradient-to-r from-red-900/50 to-orange-900/50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold text-white mb-6">🚀 شهر هوشمند آینده</h2>
+            <p class="text-xl text-gray-300 mb-8">
+                سیستم ما می‌تواند ترافیک شهر شما را تا 40% بهبود دهد
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/contact.html" 
+                   class="inline-flex items-center px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition duration-300 transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-city ml-2"></i>
+                    پیاده‌سازی در شهر
+                </a>
+                <a href="#" 
+                   class="inline-flex items-center px-8 py-4 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-chart-line ml-2"></i>
+                    مشاهده دمو زنده
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-red-900 border-t border-red-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-gray-400">© 2025 سهیل طاهری. تمامی حقوق محفوظ است.</p>
+        </div>
+    </footer>
+
+    <script>
+        let trafficChart;
+        let predictionActive = false;
+        let selectedVehicle = null;
+        
+        // Initialize traffic particles
+        function createTrafficParticles() {
+            const container = document.getElementById('trafficParticles');
+            
+            setInterval(() => {
+                const car = document.createElement('div');
+                car.className = 'car-particle';
+                car.style.top = Math.random() * 80 + 10 + '%';
+                car.style.animationDelay = Math.random() * 2 + 's';
+                car.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                
+                container.appendChild(car);
+                
+                setTimeout(() => {
+                    car.remove();
+                }, 10000);
+            }, 1000);
+        }
+        
+        // Initialize traffic chart
+        function initTrafficChart() {
+            const ctx = document.getElementById('trafficChart').getContext('2d');
+            trafficChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'سرعت متوسط (km/h)',
+                        data: [],
+                        borderColor: '#dc2626',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'تراکم ترافیک (%)',
+                        data: [],
+                        borderColor: '#fbbf24',
+                        backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: 'white' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            ticks: { color: 'white' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function selectVehicle(vehicle) {
+            // Remove previous selection
+            if (selectedVehicle) {
+                selectedVehicle.style.border = 'none';
+            }
+            
+            // Select new vehicle
+            selectedVehicle = vehicle;
+            vehicle.style.border = '3px solid #fbbf24';
+            
+            // Show vehicle info
+            const vehicleType = vehicle.classList.contains('truck') ? 'کامیون' : 
+                              vehicle.classList.contains('bus') ? 'اتوبوس' : 'خودرو';
+            
+            alert(`${vehicleType} انتخاب شد. سرعت فعلی: ${Math.floor(Math.random() * 40 + 20)} km/h`);
+        }
+        
+        function predictTraffic() {
+            if (predictionActive) return;
+            
+            predictionActive = true;
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i>در حال پیش‌بینی...';
+            button.disabled = true;
+            
+            // Simulate prediction process
+            let progress = 0;
+            const predictionInterval = setInterval(() => {
+                progress += 25;
+                
+                // Update metrics
+                document.getElementById('avgSpeed').textContent = Math.floor(Math.random() * 30 + 30) + ' km/h';
+                document.getElementById('trafficDensity').textContent = 
+                    ['کم', 'متوسط', 'زیاد'][Math.floor(Math.random() * 3)];
+                document.getElementById('vehicleCount').textContent = 
+                    (Math.floor(Math.random() * 500 + 1000)).toLocaleString();
+                document.getElementById('delayTime').textContent = 
+                    Math.floor(Math.random() * 20 + 5) + ' دقیقه';
+                
+                // Update chart
+                const now = new Date().toLocaleTimeString('fa-IR');
+                trafficChart.data.labels.push(now);
+                trafficChart.data.datasets[0].data.push(Math.random() * 30 + 30);
+                trafficChart.data.datasets[1].data.push(Math.random() * 40 + 30);
+                
+                if (trafficChart.data.labels.length > 10) {
+                    trafficChart.data.labels.shift();
+                    trafficChart.data.datasets[0].data.shift();
+                    trafficChart.data.datasets[1].data.shift();
+                }
+                
+                trafficChart.update();
+                
+                if (progress >= 100) {
+                    clearInterval(predictionInterval);
+                    
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    predictionActive = false;
+                    
+                    // Show prediction results
+                    alert('پیش‌بینی تکمیل شد! ترافیک در 2 ساعت آینده 25% افزایش خواهد یافت.');
+                }
+            }, 1000);
+        }
+        
+        function optimizeRoute() {
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+            
+            if (!origin || !destination) {
+                alert('لطفاً مبدأ و مقصد را وارد کنید.');
+                return;
+            }
+            
+            // Show loading
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i>در حال محاسبه...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                document.getElementById('routeResults').classList.remove('hidden');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 2000);
+        }
+        
+        // Traffic light simulation
+        function simulateTrafficLights() {
+            const lights = ['light1', 'light2', 'light3'];
+            const colors = ['red', 'yellow', 'green'];
+            
+            setInterval(() => {
+                lights.forEach(lightId => {
+                    const light = document.getElementById(lightId);
+                    const lightElements = light.querySelectorAll('.light');
+                    
+                    // Clear all lights
+                    lightElements.forEach(l => {
+                        l.className = 'light';
+                    });
+                    
+                    // Set random light
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    const randomIndex = colors.indexOf(randomColor);
+                    lightElements[randomIndex].classList.add(randomColor);
+                });
+            }, 3000);
+        }
+        
+        // Vehicle movement simulation
+        function simulateVehicleMovement() {
+            const vehicles = document.querySelectorAll('.vehicle');
+            
+            setInterval(() => {
+                vehicles.forEach(vehicle => {
+                    const currentLeft = parseInt(vehicle.style.left) || 0;
+                    const currentTop = parseInt(vehicle.style.top) || 0;
+                    
+                    // Random movement
+                    const newLeft = Math.max(0, Math.min(500, currentLeft + (Math.random() - 0.5) * 20));
+                    const newTop = Math.max(0, Math.min(450, currentTop + (Math.random() - 0.5) * 10));
+                    
+                    vehicle.style.left = newLeft + 'px';
+                    vehicle.style.top = newTop + 'px';
+                });
+            }, 2000);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            createTrafficParticles();
+            initTrafficChart();
+            simulateTrafficLights();
+            simulateVehicleMovement();
+            
+            // Add initial data to chart
+            for (let i = 0; i < 5; i++) {
+                const time = new Date(Date.now() - (5-i) * 60000).toLocaleTimeString('fa-IR');
+                trafficChart.data.labels.push(time);
+                trafficChart.data.datasets[0].data.push(Math.random() * 30 + 30);
+                trafficChart.data.datasets[1].data.push(Math.random() * 40 + 30);
+            }
+            trafficChart.update();
+        });
+    </script>
+</body>
+</html>
